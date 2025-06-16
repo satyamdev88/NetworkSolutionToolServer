@@ -124,16 +124,21 @@ app.get('/traceroute/:ip', (req, res) => {
 //   }
 // });
 
+
 app.post('/ping-once', async (req, res) => {
   const { host } = req.body;
-  try {
-    if (!host) return res.status(400).json({ error: 'Host is required' });
+  if (!host) {
+    return res.status(400).json({ error: 'Host is required' });
+  }
 
+  try {
+    // Try external API call
     const response = await axios.get(`https://api.hackertarget.com/nping/?q=${host}`);
-    return res.json({ success: true, output: response.data });
+    // response.data should be text with ping info
+    res.json({ success: true, output: response.data });
   } catch (error) {
-    console.error('Ping fallback error:', error);
-    return res.status(500).json({ error: 'Ping not available on server.' });
+    console.error('Ping fallback error:', error.message);
+    res.status(500).json({ error: 'Ping not available on server.' });
   }
 });
 
