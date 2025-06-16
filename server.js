@@ -103,45 +103,26 @@ app.get('/traceroute/:ip', (req, res) => {
 });
 
 /** ========== PING CHERKER ========== */
-// app.post('/ping-once', async (req, res) => {
-//   const { host } = req.body;
-//   try {
-//     const result = await ping.promise.probe(host);
-//     if (result.alive) {
-//       res.json({
-//         success: true,
-//         time: result.time,
-//         host
-//       });
-//     } else {
-//       res.json({
-//         success: false,
-//         host
-//       });
-//     }
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// });
-
-
 app.post('/ping-once', async (req, res) => {
   const { host } = req.body;
-  if (!host) {
-    return res.status(400).json({ error: 'Host is required' });
-  }
-
   try {
-    // Try external API call
-    const response = await axios.get(`https://api.hackertarget.com/nping/?q=${host}`);
-    // response.data should be text with ping info
-    res.json({ success: true, output: response.data });
+    const result = await ping.promise.probe(host);
+    if (result.alive) {
+      res.json({
+        success: true,
+        time: result.time,
+        host
+      });
+    } else {
+      res.json({
+        success: false,
+        host
+      });
+    }
   } catch (error) {
-    console.error('Ping fallback error:', error.message);
-    res.status(500).json({ error: 'Ping not available on server.' });
+    res.status(500).json({ error: error.message });
   }
 });
-
 
 
 
